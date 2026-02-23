@@ -145,4 +145,4 @@ if st.session_state.accepted:
 
 # ---------------- FOOTER ----------------
 st.markdown("---")
-st.caption("Project Lead: Your Name | Project Spider Bot")
+st.caption("Project Lead: Vishal Shekhar | Project Spider Bot")
