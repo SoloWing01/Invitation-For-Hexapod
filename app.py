@@ -7,31 +7,26 @@ from supabase import create_client
 
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
-    page_title="Project Spider Bot",
+    page_title="Project Spider Bot Registration",
     page_icon="🕷️",
     layout="centered"
 )
 
-# ---------------- SAFE SUPABASE CONNECTION ----------------
-# (Keys stored securely in Streamlit Secrets)
-
+# ---------------- SUPABASE CONNECTION ----------------
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# ---------------- GET NAME FROM QR ----------------
-params = st.query_params
-name = params.get("invite", "Guest")
-
 # ---------------- HEADER ----------------
 st.title("Project Spider Bot")
 st.subheader("Robotics & Intelligent Systems Initiative")
 
-st.markdown(f"""
-Hello **{name}**,  
+st.markdown("""
+Welcome to the official registration portal for **Project Spider Bot**.
 
-You are invited to collaborate on **Project Spider Bot**, a professional robotics initiative focused on intelligent autonomous systems.
+If you're interested in collaborating on this robotics initiative,
+please submit your details below.
 """)
 
 # ---------------- IMAGE (OPTIONAL) ----------------
@@ -43,10 +38,15 @@ if os.path.exists(image_path):
 
 # ---------------- PROJECT DETAILS ----------------
 st.header("About the Project")
-st.write("""
-Project Spider Bot aims to design and develop a modular robotic system inspired by multi-legged locomotion.
 
-This initiative integrates robotics engineering, embedded systems, and intelligent control systems.
+st.write("""
+Project Spider Bot focuses on designing and developing
+a modular multi-legged robotic system integrating:
+
+- Robotics engineering  
+- Embedded systems  
+- Intelligent control systems  
+- Real-time decision-making  
 """)
 
 # ---------------- VALIDATION FUNCTIONS ----------------
@@ -65,42 +65,55 @@ if "accepted" not in st.session_state:
     st.session_state.accepted = False
 
 # ---------- DECLINE ----------
-if st.button("Decline Invitation"):
+if st.button("Not Interested"):
 
-    supabase.table("invitations").insert({
-        "name": name,
-        "email": "",
-        "phone": "",
-        "message": "",
-        "status": "Declined",
-        "submitted_at": datetime.now().isoformat()
-    }).execute()
+    with st.form("decline_form"):
+        name_decline = st.text_input("Full Name *")
+        submit_decline = st.form_submit_button("Confirm")
 
-    st.success("Your response has been recorded.")
-    st.stop()
+        if submit_decline:
+
+            if not name_decline.strip():
+                st.error("Name is required.")
+            else:
+                supabase.table("invitations").insert({
+                    "name": name_decline,
+                    "email": "",
+                    "phone": "",
+                    "message": "",
+                    "status": "Declined",
+                    "submitted_at": datetime.now().isoformat()
+                }).execute()
+
+                st.success("Your response has been recorded.")
+                st.stop()
 
 # ---------- ACCEPT ----------
-if st.button("Accept Invitation"):
+if st.button("Register / Accept Invitation"):
     st.session_state.accepted = True
 
-# ---------------- CONTACT FORM ----------------
+# ---------------- REGISTRATION FORM ----------------
 if st.session_state.accepted:
 
-    st.success("Please provide your contact details.")
+    st.success("Please complete the registration form.")
 
-    with st.form("contact_form"):
+    with st.form("registration_form"):
 
+        name_input = st.text_input("Full Name *")
         email = st.text_input("Email Address *")
         phone = st.text_input("Phone Number * (10 digits)")
         message = st.text_area("Optional Message")
 
-        submit = st.form_submit_button("Submit Details")
+        submit = st.form_submit_button("Submit Registration")
 
         if submit:
 
             errors = []
 
-            # Required checks
+            # Required fields
+            if not name_input.strip():
+                errors.append("Name is required.")
+
             if not email.strip():
                 errors.append("Email is required.")
 
@@ -118,10 +131,8 @@ if st.session_state.accepted:
                 for error in errors:
                     st.error(error)
             else:
-
-                # Insert into Supabase
                 supabase.table("invitations").insert({
-                    "name": name,
+                    "name": name_input,
                     "email": email,
                     "phone": phone,
                     "message": message,
@@ -129,7 +140,7 @@ if st.session_state.accepted:
                     "submitted_at": datetime.now().isoformat()
                 }).execute()
 
-                st.success("Your information has been recorded successfully.")
+                st.success("Registration successful. Thank you!")
                 st.balloons()
 
 # ---------------- FOOTER ----------------
