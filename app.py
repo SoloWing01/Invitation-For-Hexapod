@@ -47,6 +47,7 @@ a modular multi-legged robotic system integrating:
 - Embedded systems  
 - Intelligent control systems  
 - Real-time decision-making  
+- ROS 2
 """)
 
 # ---------------- VALIDATION FUNCTIONS ----------------
@@ -146,3 +147,4 @@ if st.session_state.accepted:
 # ---------------- FOOTER ----------------
 st.markdown("---")
 st.caption("Project Lead: Vishal Shekhar | Project Spider Bot")
+st.caption("Contact phone : 8317717190   | Mail: vectorsine@gmail.com")
